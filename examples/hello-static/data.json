@@ -1,0 +1,192 @@
+{
+  "type": "snapshot",
+  "cards": [
+    {
+      "id": "welcome",
+      "title": "Hello, Mquake!",
+      "subtitle": "来自 .mqe 静态插件",
+      "body": "改 data.json 后点「立即刷新」即可看到变化。",
+      "rows": [
+        {
+          "label": "格式",
+          "value": ".mqe / ZIP"
+        },
+        {
+          "label": "通道",
+          "value": "file"
+        }
+      ],
+      "priority": 10
+    },
+    {
+      "id": "links",
+      "title": "开发文档",
+      "body": "插件开发套件随公开仓库提供。",
+      "url": "https://github.com/imisakamikoto/mquake2",
+      "priority": 1
+    }
+  ],
+  "metrics": [
+    {
+      "id": "temp",
+      "label": "模拟观测值",
+      "value": 42.5,
+      "unit": "",
+      "min": 0,
+      "max": 100,
+      "history": [
+        30,
+        33,
+        35,
+        38,
+        40,
+        41,
+        42.5
+      ],
+      "color": "#FF9933",
+      "description": "带迷你趋势图"
+    },
+    {
+      "id": "count",
+      "label": "样本数",
+      "value": 128,
+      "unit": "条",
+      "color": "#4488FF"
+    }
+  ],
+  "events": [
+    {
+      "id": "demo-1",
+      "title": "演示：自定义事件",
+      "time": "2026-01-01T00:00:00Z",
+      "latitude": 35.68,
+      "longitude": 139.69,
+      "depth": 10,
+      "magnitude": 4.2,
+      "place": "东京湾",
+      "shindo": "3",
+      "description": "插件事件只出现在列表，不会触发警报音。"
+    }
+  ],
+  "stations": [
+    {
+      "code": "PLG-001",
+      "name": "自定义观测点 A",
+      "latitude": 35.6812,
+      "longitude": 139.7671,
+      "kind": "plugin",
+      "shindo": 2.5,
+      "pga": 12.3
+    }
+  ],
+  "overlays": [
+    {
+      "id": "point-a",
+      "shape": "marker",
+      "points": [
+        [
+          35.6812,
+          139.7671
+        ]
+      ],
+      "label": "A",
+      "color": "#FF9933",
+      "tooltip": "自定义观测点 A"
+    },
+    {
+      "id": "zone",
+      "shape": "circle",
+      "points": [
+        [
+          35.68,
+          139.69
+        ]
+      ],
+      "radius": 24,
+      "color": "#4488FF",
+      "fillColor": "#334488FF",
+      "tooltip": "示例区域"
+    },
+    {
+      "id": "line",
+      "shape": "polyline",
+      "points": [
+        [
+          35.6,
+          139.6
+        ],
+        [
+          35.68,
+          139.69
+        ],
+        [
+          35.75,
+          139.8
+        ]
+      ],
+      "color": "#9966FF",
+      "strokeWidth": 3,
+      "tooltip": "示例路径"
+    },
+    {
+      "id": "area",
+      "shape": "polygon",
+      "points": [
+        [
+          35.5,
+          139.5
+        ],
+        [
+          35.5,
+          139.9
+        ],
+        [
+          35.9,
+          139.9
+        ],
+        [
+          35.9,
+          139.5
+        ]
+      ],
+      "color": "#44BB66",
+      "fillColor": "#3344BB66",
+      "tooltip": "示例多边形"
+    }
+  ],
+  "actions": [
+    {
+      "id": "doc",
+      "label": "查看开发文档",
+      "kind": "openUrl",
+      "value": "https://github.com/imisakamikoto/mquake2"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "hello",
+      "title": "插件已加载",
+      "body": "静态数据读取成功。",
+      "level": "info"
+    }
+  ],
+  "rules": [
+    {
+      "id": "hot",
+      "target": "metrics",
+      "op": "color",
+      "field": "value",
+      "comparator": ">=",
+      "threshold": 40,
+      "set": "#FF4444"
+    },
+    {
+      "id": "derive",
+      "target": "metrics",
+      "op": "derive",
+      "comparator": ">=",
+      "threshold": 40,
+      "set": "高值指标"
+    }
+  ]
+}

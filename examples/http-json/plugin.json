@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "id": "com.example.http-json",
+  "name": "HTTP 自定义数据",
+  "version": "1.2.0",
+  "author": "Mquake SDK",
+  "description": "演示 HTTP 轮询、权限白名单、settings 模板变量与 mapping 字段映射。把 URL 换成你自己的接口即可。",
+  "capabilities": [
+    "events",
+    "metrics",
+    "cards"
+  ],
+  "permissions": {
+    "hosts": [
+      "127.0.0.1",
+      "localhost",
+      "api.example.com"
+    ],
+    "process": false,
+    "alerts": false,
+    "sound": false,
+    "overlay": false
+  },
+  "transport": {
+    "type": "http",
+    "url": "http://127.0.0.1:8765/data.json?city=${config.city}&t=${now}",
+    "method": "GET",
+    "headers": {
+      "X-Api-Key": "${config.apiKey}"
+    },
+    "intervalSeconds": 30,
+    "timeoutSeconds": 6
+  },
+  "settings": [
+    {
+      "key": "apiKey",
+      "label": "API Key",
+      "type": "text",
+      "default": ""
+    },
+    {
+      "key": "city",
+      "label": "城市代码",
+      "type": "select",
+      "options": [
+        "tokyo",
+        "osaka",
+        "sendai"
+      ],
+      "default": "tokyo"
+    }
+  ],
+  "mapping": {
+    "events": {
+      "path": "data.items",
+      "fields": {
+        "id": "event_id",
+        "title": "name",
+        "latitude": "lat",
+        "longitude": "lon",
+        "magnitude": "mag",
+        "time": "occurred_at"
+      }
+    }
+  }
+}

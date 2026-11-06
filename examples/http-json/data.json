@@ -1,0 +1,18 @@
+{
+  "type": "snapshot",
+  "metrics": [
+    {
+      "id": "latency",
+      "label": "接口延迟",
+      "value": 18,
+      "unit": "ms"
+    }
+  ],
+  "cards": [
+    {
+      "id": "hint",
+      "title": "HTTP 通道",
+      "body": "启动 server.py 后把本目录打包安装。"
+    }
+  ]
+}

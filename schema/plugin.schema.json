@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/imisakamikoto/mquake-plugins/main/schema/plugin.schema.json",
+  "title": "Mquake 插件清单 (plugin.json)",
+  "description": "schema=1。.mqe 包根目录必须放这个文件。",
+  "type": "object",
+  "required": ["schema", "id", "name", "version", "capabilities", "transport"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": 1, "description": "清单协议版本，当前只能是 1" },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{1,63}$",
+      "description": "全局唯一标识，也决定解包目录名"
+    },
+    "name": { "type": "string", "minLength": 1, "description": "设置页显示名" },
+    "version": { "type": "string", "description": "语义化版本，建议 x.y.z" },
+    "author": { "type": "string" },
+    "description": { "type": "string" },
+    "homepage": { "type": "string" },
+    "license": { "type": "string" },
+    "minAppVersion": { "type": "string", "description": "最低宿主版本，留空表示不限制" },
+    "icon": { "type": "string", "description": "包内图标相对路径" },
+    "capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "声明了才会拿到对应通道，未声明的数据一律丢弃",
+      "items": {
+        "type": "string",
+        "enum": ["events", "stations", "overlay", "cards", "metrics", "tiles", "sounds", "theme", "actions", "rules", "webhook", "notifications"]
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "默认全关。网络访问必须列白名单，进程通道必须显式开启。",
+      "properties": {
+        "hosts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "允许访问的主机名，支持 *.example.com 后缀匹配"
+        },
+        "process": { "type": "boolean", "default": false },
+        "alerts": { "type": "boolean", "default": false, "description": "宿主默认仍会拒绝插件触发警报" },
+        "sound": { "type": "boolean", "default": false },
+        "overlay": { "type": "boolean", "default": false }
+      }
+    },
+    "transport": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "enum": ["file", "http", "websocket", "process"] },
+        "file": { "type": "string", "description": "file 通道：包内相对路径，禁止 .. 与绝对路径" },
+        "url": { "type": "string", "description": "http/websocket 通道地址，支持 ${config.x} 模板" },
+        "method": { "type": "string", "enum": ["GET", "POST"], "default": "GET" },
+        "headers": { "type": "object", "additionalProperties": { "type": "string" } },
+        "body": { "type": "string" },
+        "command": { "type": "string", "description": "process 通道可执行文件（仅桌面端）" },
+        "args": { "type": "array", "items": { "type": "string" } },
+        "intervalSeconds": { "type": "integer", "minimum": 1, "default": 60, "description": "下限 5 秒，运行时会强制提升" },
+        "timeoutSeconds": { "type": "integer", "minimum": 1, "default": 8 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "file" } }, "required": ["type"] },
+          "then": { "required": ["file"] }
+        },
+        {
+          "if": { "properties": { "type": { "enum": ["http", "websocket"] } }, "required": ["type"] },
+          "then": { "required": ["url"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "process" } }, "required": ["type"] },
+          "then": { "required": ["command"] }
+        }
+      ]
+    },
+    "settings": {
+      "type": "array",
+      "description": "用户可配置项，宿主自动生成表单",
+      "items": {
+        "type": "object",
+        "required": ["key", "label", "type"],
+        "additionalProperties": false,
+        "properties": {
+          "key": { "type": "string", "minLength": 1 },
+          "label": { "type": "string" },
+          "type": { "type": "string", "enum": ["text", "number", "toggle", "select"] },
+          "default": {},
+          "options": { "type": "array", "items": { "type": "string" } },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "mapping": {
+      "type": "object",
+      "description": "把任意 JSON 结构映射成插件标准字段。键为能力名，值为 {path, fields}。",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string", "description": "点路径，如 data.items；支持 a.b[0].c" },
+          "fields": {
+            "type": "object",
+            "description": "目标字段名 → 源数据点路径",
+            "additionalProperties": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "id": "com.example.geojson-overlay",
+  "name": "GeoJSON 地图叠加",
+  "version": "1.0.0",
+  "author": "Mquake SDK",
+  "description": "直接把 GeoJSON FeatureCollection 当数据文件，点/线/面自动转成地图叠加层，无需写转换代码。",
+  "capabilities": [
+    "overlay",
+    "cards"
+  ],
+  "permissions": {
+    "hosts": [],
+    "process": false,
+    "alerts": false,
+    "sound": false,
+    "overlay": true
+  },
+  "transport": {
+    "type": "file",
+    "file": "features.geojson",
+    "intervalSeconds": 300
+  },
+  "settings": []
+}

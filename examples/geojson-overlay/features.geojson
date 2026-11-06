@@ -1,0 +1,81 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "观测点",
+        "color": "#FF9933",
+        "description": "Point 自动转 marker"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.7671,
+          35.6812
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "巡检路线",
+        "color": "#9966FF",
+        "strokeWidth": 3
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            139.6,
+            35.6
+          ],
+          [
+            139.69,
+            35.68
+          ],
+          [
+            139.8,
+            35.75
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "关注区域",
+        "color": "#44BB66",
+        "fill": "#3344BB66",
+        "description": "Polygon 自动转面"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              139.5,
+              35.5
+            ],
+            [
+              139.9,
+              35.5
+            ],
+            [
+              139.9,
+              35.9
+            ],
+            [
+              139.5,
+              35.9
+            ],
+            [
+              139.5,
+              35.5
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

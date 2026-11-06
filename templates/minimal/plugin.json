@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "id": "com.example.minimal",
+  "name": "最小插件模板",
+  "version": "1.0.0",
+  "description": "最小可用 .mqe：静态文件 + 一张信息卡 + 一个指标。复制本目录改名即可开始。",
+  "capabilities": [
+    "cards",
+    "metrics"
+  ],
+  "permissions": {
+    "hosts": [],
+    "process": false,
+    "alerts": false,
+    "sound": false,
+    "overlay": false
+  },
+  "transport": {
+    "type": "file",
+    "file": "data.json",
+    "intervalSeconds": 60
+  },
+  "settings": []
+}

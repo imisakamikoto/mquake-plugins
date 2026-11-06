@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "id": "com.example.process-jsonl",
+  "name": "Python 子进程插件",
+  "version": "1.0.0",
+  "author": "Mquake SDK",
+  "description": "用任意语言写插件：stdout 每行一条 JSON 报文。这里用 Python 标准库生成实时指标与信息卡。仅桌面端可用。",
+  "capabilities": [
+    "metrics",
+    "cards",
+    "notifications",
+    "overlay"
+  ],
+  "permissions": {
+    "hosts": [],
+    "process": true,
+    "alerts": false,
+    "sound": false,
+    "overlay": true
+  },
+  "transport": {
+    "type": "process",
+    "command": "python",
+    "args": [
+      "main.py"
+    ],
+    "intervalSeconds": 10,
+    "timeoutSeconds": 8
+  },
+  "settings": [
+    {
+      "key": "label",
+      "label": "指标名称",
+      "type": "text",
+      "default": "自采集数值"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "id": "com.example.websocket",
+  "name": "WebSocket 实时推送",
+  "version": "1.0.0",
+  "author": "Mquake SDK",
+  "description": "长连接推送指标，断线自动 5 秒重连。先运行 server.py（需 pip install websockets）。",
+  "capabilities": [
+    "metrics",
+    "cards",
+    "overlay"
+  ],
+  "permissions": {
+    "hosts": [
+      "127.0.0.1",
+      "localhost"
+    ],
+    "process": false,
+    "alerts": false,
+    "sound": false,
+    "overlay": true
+  },
+  "transport": {
+    "type": "websocket",
+    "url": "ws://127.0.0.1:8766",
+    "intervalSeconds": 5,
+    "timeoutSeconds": 8
+  },
+  "settings": []
+}

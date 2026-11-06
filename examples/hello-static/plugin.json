@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "id": "com.example.hello-static",
+  "name": "Hello 静态插件",
+  "version": "1.0.0",
+  "author": "Mquake SDK",
+  "description": "无需联网、无需写代码，用一份 data.json 演示信息卡、指标、事件、测站、地图叠加、规则、动作与应用内通知。",
+  "capabilities": [
+    "events",
+    "stations",
+    "overlay",
+    "cards",
+    "metrics",
+    "actions",
+    "rules",
+    "notifications"
+  ],
+  "permissions": {
+    "hosts": [],
+    "process": false,
+    "alerts": false,
+    "sound": false,
+    "overlay": true
+  },
+  "transport": {
+    "type": "file",
+    "file": "data.json",
+    "intervalSeconds": 60
+  },
+  "settings": [
+    {
+      "key": "city",
+      "label": "城市",
+      "type": "text",
+      "default": "东京"
+    },
+    {
+      "key": "threshold",
+      "label": "指标告警阈值",
+      "type": "number",
+      "default": 40
+    },
+    {
+      "key": "showDemo",
+      "label": "显示演示事件",
+      "type": "toggle",
+      "default": true
+    }
+  ]
+}

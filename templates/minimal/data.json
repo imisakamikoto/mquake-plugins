@@ -1,0 +1,18 @@
+{
+  "type": "snapshot",
+  "cards": [
+    {
+      "id": "hello",
+      "title": "Hello, Mquake!",
+      "body": "把这里换成你的内容。"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "value",
+      "label": "示例数值",
+      "value": 0,
+      "unit": ""
+    }
+  ]
+}
