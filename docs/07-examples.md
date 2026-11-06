@@ -27,6 +27,9 @@
 
 **适合**：想快速看「插件到底能在界面上做什么」，直接用它。
 
+> 这个示例**没有**授予 `permissions.alerts`，所以它的事件只展示、测站只在地图绘制，
+> 不会触发任何预警。想看预警链路见下面第 6 个示例。
+
 ---
 
 ## 2. `http-json` — HTTP 轮询 + 白名单 + 模板 + 字段映射
@@ -131,3 +134,43 @@ python examples/websocket/server.py
 | 画自定义区域 / 路线 | `geojson-overlay` | `features.geojson` |
 | 做一块信息看板 | `hello-static` | `cards` / `metrics` |
 | 实时行情/遥测 | `websocket` | `server.py` 推送内容 |
+| 自定义预警 / 台站参与推算 | `alert-eew` | `data.json` 的事件与测站字段 |
+
+
+---
+
+## 6. `alert-eew` — 预警授权（会真的出声）
+
+**通道**：`file` → `data.json`　**能力**：`events` `stations` `cards`　**权限**：`alerts: true`
+
+> ⚠️ 启用这个插件会真的播放紧急地震速报警报音、发通知、弹全屏并 TTS 播报。
+> 请确认后再打开开关。
+
+关键点在 `plugin.json`：
+
+```json
+"permissions": { "alerts": true, "hosts": [], "process": false }
+```
+
+以及 `data.json`：
+
+```json
+{
+  "type": "snapshot",
+  "events": [{
+    "id": "eew-001", "isEew": true, "active": true,
+    "eewKind": "警報", "reportNum": 1,
+    "shindo": "5-", "maxEstimatedIntensity": 4.8,
+    "warnRegionCount": 7, "place": "东京湾"
+  }],
+  "stations": [{ "code": "PLG-S1", "shindo": 4.2, "pga": 120 }]
+}
+```
+
+- `isEew` + `active` + 清单授权三者齐备才会进入 `activeEew`；
+- `eewKind: "警報"` 或 `shindo` ≥ 5 弱 → 警报音；否则预报音；
+- `reportNum` 递增 → 更新音；`warnRegionCount` 增加 ≥ 3 → 补播警报音；
+- 测站并入 `_allStations`，参与阈值音效、震源推算、摇晃检知与历史回放；
+- `active: false` 可让事件只展示、不进预警链路。
+
+停用插件立刻停止。宿主总开关 `allowPluginAlerts=false` 可一键让全部插件退回只读。

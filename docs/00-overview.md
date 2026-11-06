@@ -78,20 +78,34 @@ com.example.myplugin.mqe   (ZIP)
 | 停用 | 停 worker、取消定时器/订阅、关连接、杀子进程，并从聚合快照移除数据。 |
 | 卸载 | 停用 + 删除目录与 `.mqe` 包 + 清状态。 |
 
-## 5. 告警隔离（最重要的设计约束）
+## 5. 预警与测站链路（两道闸门）
 
 紧急地震速报（EEW）的警报音、全屏弹窗、TTS 与系统通知是一条严肃的链路。
-插件**默认完全隔离在它之外**：
+插件可以**正常触发**它，但需要两道闸门同时放行：
 
-1. 插件事件转成 `EarthquakeEvent` 时 `isEew = false`；
-2. 只追加到事件列表 `events`，**不进** `activeEew`；
-3. `_playEventSounds(active)` 只看 `activeEew`，插件数据永远到不了；
-4. 测站只用于地图绘制，不喂给 `AudioService.onStations`，也不喂给本地震源推算 `HypoService.ingest`；
-5. `source` 统一标记 `插件:<插件名>`，界面可一眼区分；
-6. 即使清单写 `permissions.alerts: true`，宿主构造 `PluginRuntime` 时
-   `allowPluginAlerts` 默认 `false`，仍会拒绝。
+| 闸门 | 位置 | 默认 |
+| --- | --- | --- |
+| 插件清单 `permissions.alerts` | `plugin.json` | `false`（只读） |
+| 宿主总开关 `PluginRuntime.allowPluginAlerts` | 宿主构造参数 | `true` |
 
-**结论：插件可以补充信息，但不能伪造官方预警。** 这是刻意的安全边界，不是限制遗漏。
+**已授权**（两道都开）时：
+
+1. 插件报文里 `isEew: true` 且 `active: true`、非 `cancel` 的事件会并入
+   `activeEew`，与官方 EEW 一起走 `_playEventSounds`：预报音 / 警报音 /
+   更新音 / 取消音、应用内与系统通知、Android 全屏弹窗、窗口置顶、TTS 全部生效；
+2. 共用 `AudioService` 的报号去重记忆 —— 报号递增触发更新音、预报升警报、
+   `warnRegionCount` 显著增加补播警报音，规则与官方一致，重复推送不会响第二遍；
+3. 插件测站并入主测站流 `_allStations`，完整参与实时震度 / PGA 阈值提示音、
+   本地震源推算 `HypoService.ingest`、摇晃检知、历史回放存档与震度排行；
+4. 测站 `kind` 使用独立的 `插件:<id>` 命名空间，噪声基线不会与官方台站串。
+
+**未授权**时保持只读隔离：事件只进列表、测站只在地图绘制，不进任何告警或推算链路。
+
+所有插件数据一律带 `插件:<插件名>` 来源标记，界面可一眼区分；事件 `eventId`
+带 `plugin:<id>:` 前缀，与官方事件的去重记忆完全隔离。
+
+> 想关闭全部插件的预警能力：宿主侧把 `allowPluginAlerts` 设为 `false`，
+> 无需逐个改插件清单。
 
 ## 6. 与其它扩展点的关系
 

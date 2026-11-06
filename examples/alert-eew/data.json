@@ -1,0 +1,42 @@
+{
+  "type": "snapshot",
+  "events": [
+    {
+      "id": "eew-001",
+      "title": "自定义速报（警报）",
+      "isEew": true,
+      "active": true,
+      "eewKind": "警報",
+      "reportNum": 1,
+      "time": "2026-01-01T00:00:00Z",
+      "latitude": 35.68,
+      "longitude": 139.69,
+      "depth": 10,
+      "magnitude": 6.8,
+      "shindo": "5-",
+      "maxEstimatedIntensity": 4.8,
+      "warnRegionCount": 7,
+      "place": "东京湾",
+      "description": "授予 permissions.alerts 后会按警报播报。"
+    }
+  ],
+  "stations": [
+    {
+      "code": "PLG-S1",
+      "name": "自采集台站",
+      "latitude": 35.6812,
+      "longitude": 139.7671,
+      "kind": "plugin-eew",
+      "shindo": 4.2,
+      "pga": 120
+    }
+  ],
+  "cards": [
+    {
+      "id": "note",
+      "title": "预警授权已开启",
+      "body": "启用本插件会真的播放警报音。把报号从 1 递增可观察更新音。",
+      "priority": 10
+    }
+  ]
+}

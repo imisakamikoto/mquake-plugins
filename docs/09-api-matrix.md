@@ -4,8 +4,8 @@
 
 | 能力 | 数据键 | 需要权限 | 展示位置 |
 | --- | --- | --- | --- |
-| `events` | `events` | — | 事件列表（不告警） |
-| `stations` | `stations` | — | 地图测站（不参与音效/推算） |
+| `events` | `events` | 触发预警需 `alerts` | 事件列表；授权且 `isEew` 时正常触发预警 |
+| `stations` | `stations` | 参与活动需 `alerts` | 地图测站；授权后并入主测站流 |
 | `overlay` | `overlays` | `permissions.overlay` | 地图叠加层 |
 | `cards` | `cards` | — | 设置→插件 数据预览 |
 | `metrics` | `metrics` | — | 设置→插件 数据预览 + 迷你图 |
@@ -90,6 +90,7 @@ sounds{}  theme{}
 | 项 | 值 |
 | --- | --- |
 | 清单 schema | `1` |
+| 预警授权 | `permissions.alerts: true` + 宿主 `allowPluginAlerts` |
 | 报文 / 数据文件 | 1 MB |
 | 解包总量 | 32 MB |
 | 单文件 | 8 MB |

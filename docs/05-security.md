@@ -3,35 +3,66 @@
 插件是**用户自己安装的代码/数据**，但地震预警客户端的告警链路必须保持可信。
 下面是完整的安全边界，插件作者与集成者都应当了解。
 
-## 1. 告警隔离（最高优先级）
+## 1. 预警与测站链路（两道闸门）
 
 | 通道 | 插件能否触碰 |
 | --- | --- |
-| 紧急地震速报警报音 / 预报音 / 更新音 | ❌ |
-| 全屏紧急弹窗（Android） | ❌ |
-| TTS 语音播报 | ❌ |
-| 系统通知 / 通知中心 | ❌（只有插件面板里的应用内通知） |
-| 本地震源推算 `HypoService` | ❌ |
-| 实时震度 / PGA 阈值音效 | ❌ |
-| 历史回放存档 `StationReplayStore` | ❌ |
-| 事件列表（展示） | ✅ |
-| 地图（测站 / 叠加层） | ✅（需 `permissions.overlay`） |
+| 紧急地震速报警报音 / 预报音 / 更新音 | ✅ 需 `alerts` |
+| 全屏紧急弹窗（Android） | ✅ 需 `alerts` |
+| TTS 语音播报 | ✅ 需 `alerts` |
+| 系统通知 / 通知中心 | ✅ 需 `alerts`；未授权只有插件面板内通知 |
+| 本地震源推算 `HypoService` | ✅ 需 `alerts` |
+| 实时震度 / PGA 阈值音效 | ✅ 需 `alerts` |
+| 历史回放存档 `StationReplayStore` | ✅ 需 `alerts` |
+| 事件列表（展示） | ✅ 始终 |
+| 地图（测站 / 叠加层） | ✅ 始终显示；叠加层需 `overlay` |
 | 设置 → 插件页的卡片 / 指标 / 日志 | ✅ |
 | 数据源状态面板（健康度） | ✅ |
 
-实现方式：
+实现方式（**两道闸门**：清单 `permissions.alerts` + 宿主 `allowPluginAlerts`）：
 
-1. `PluginEventData` 转成 `EarthquakeEvent` 时硬编码 `isEew: false`；
-2. 插件事件只追加到 `events`，**不进** `activeEew`；`_playEventSounds(active)`
-   只遍历 `activeEew`；
-3. 测站只用于 `setStations()` 绘制，`onStations()` / `_hypo.ingest()` 仍只用官方列表；
-4. `source` 统一为 `插件:<插件名>`，列表里可一眼分辨；
-5. 宿主 `PluginRuntime(allowPluginAlerts: false)` 是最后一道闸门 —
-   即使清单写了 `permissions.alerts: true` 也不会放行。
+1. 两者同时为真时，插件报文里 `isEew: true`、`active: true`、非 `cancel` 的事件
+   会并入 `activeEew`，与官方 EEW 一起走 `_playEventSounds`；
+2. 共用 `AudioService` 的报号去重记忆：报号递增触发更新音、预报升警报、
+   `warnRegionCount` 显著增加补播警报音，规则与官方完全一致；
+3. 插件测站并入 `_allStations`，参与阈值音效、震源推算、摇晃检知与历史回放；
+   `kind` 用 `插件:<id>` 命名空间，噪声基线不与官方台站混淆；
+4. 所有插件数据带 `插件:<插件名>` 来源标记、`plugin:<id>:` 事件 id 前缀，
+   与官方事件的去重记忆隔离，界面可一眼区分；
+5. 任一闸门为假 → 只读模式：事件只进列表、测站只在地图绘制。
 
-> **结论：插件不能伪装官方预警。** 这是产品决策，不是待实现的 TODO。
-> 如果你的业务确实需要插件触发提醒，请用 `notifications` 能力在插件面板里呈现，
-> 或在自己的服务端做推送。
+> **结论：插件可以正常触发预警，但必须由插件作者在清单里显式申请，
+> 用户在安装时可看到该权限。** 宿主总开关 `allowPluginAlerts=false` 可一键
+> 把所有插件退回只读，无需逐个改清单。
+
+### 授权示例
+
+`plugin.json`：
+
+```json
+"capabilities": ["events", "stations"],
+"permissions": { "alerts": true, "hosts": [], "process": false,
+                 "sound": false, "overlay": false }
+```
+
+数据报文：
+
+```json
+{
+  "type": "snapshot",
+  "events": [{
+    "id": "eew-001", "title": "自定义速报", "isEew": true,
+    "eewKind": "警報", "reportNum": 1, "active": true,
+    "latitude": 35.6, "longitude": 139.7, "depth": 10,
+    "magnitude": 6.8, "shindo": "5-", "maxEstimatedIntensity": 4.8,
+    "place": "示例震源", "warnRegionCount": 7
+  }],
+  "stations": [{
+    "code": "S1", "name": "自采集台站", "lat": 35.6, "lon": 139.7,
+    "shindo": 4.2, "pga": 120
+  }]
+}
+```
 
 ## 2. 权限（默认全关）
 

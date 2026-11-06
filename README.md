@@ -51,8 +51,8 @@ python tools/mqe.py pack com.example.myplugin        # → com.example.myplugin.
 
 | 能力 | 作用 | 数据键 |
 | --- | --- | --- |
-| `events` | 自定义地震 / 情报事件，出现在事件列表 | `events` |
-| `stations` | 自定义测站与震度 / PGA，画在地图上 | `stations` |
+| `events` | 自定义地震 / 情报事件；授权后可正常触发预警 | `events` |
+| `stations` | 自定义测站；授权后可参与阈值音效与震源推算 | `stations` |
 | `overlay` | 点 / 圆 / 线 / 面 / 文字标注（含裸 GeoJSON） | `overlays` |
 | `cards` | 侧栏信息卡：标题、正文、键值行、链接、优先级 | `cards` |
 | `metrics` | 数值指标 + 迷你趋势图 | `metrics` |
@@ -108,9 +108,10 @@ python tools/mqe.py pack com.example.myplugin        # → com.example.myplugin.
 
 ## 重要约束（务必先读）
 
-1. **插件默认不能触发警报。** 插件事件一律 `isEew=false`、带 `插件:<名称>` 来源标记，
-   只进事件列表；不进提示音、全屏弹窗、TTS、系统通知、本地震源推算。
-   即使清单写了 `permissions.alerts: true`，宿主侧默认仍然拒绝。
+1. **预警能力按清单显式授权。** 默认未授权时插件事件只进列表、测站只参与地图显示；
+   在 `plugin.json` 里设 `permissions.alerts: true` 后，插件 EEW 会**正常触发**
+   提示音 / 通知 / 全屏 / TTS，插件测站会**完整参与**阈值音效、震源推算与历史回放。
+   所有插件数据仍带 `插件:<名称>` 来源标记，界面可区分。
 2. **网络访问必须白名单。** `permissions.hosts` 为空 = 完全不能联网；
    未列出的主机在运行时直接拒绝。
 3. **进程通道仅桌面端**，且必须显式 `permissions.process: true`；移动端会被拒绝。
