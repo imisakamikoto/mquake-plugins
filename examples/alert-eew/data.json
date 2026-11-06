@@ -2,12 +2,12 @@
   "type": "snapshot",
   "events": [
     {
-      "id": "eew-001",
+      "eventId": "eew-001",
+      "reportNum": 1,
       "title": "自定义速报（警报）",
       "isEew": true,
       "active": true,
       "eewKind": "警報",
-      "reportNum": 1,
       "time": "2026-01-01T00:00:00Z",
       "latitude": 35.68,
       "longitude": 139.69,

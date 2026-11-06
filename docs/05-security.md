@@ -40,9 +40,11 @@
 `plugin.json`：
 
 ```json
-"capabilities": ["events", "stations"],
-"permissions": { "alerts": true, "hosts": [], "process": false,
-                 "sound": false, "overlay": false }
+{
+  "capabilities": ["events", "stations"],
+  "permissions": { "alerts": true, "hosts": [], "process": false,
+                   "sound": false, "overlay": false }
+}
 ```
 
 数据报文：
@@ -51,7 +53,7 @@
 {
   "type": "snapshot",
   "events": [{
-    "id": "eew-001", "title": "自定义速报", "isEew": true,
+    "eventId": "eew-001", "reportNum": 1, "title": "自定义速报", "isEew": true,
     "eewKind": "警報", "reportNum": 1, "active": true,
     "latitude": 35.6, "longitude": 139.7, "depth": 10,
     "magnitude": 6.8, "shindo": "5-", "maxEstimatedIntensity": 4.8,

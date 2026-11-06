@@ -83,7 +83,8 @@ python tools/mqe.py pack com.example.myplugin        # → com.example.myplugin.
 | [docs/07-examples.md](docs/07-examples.md) | 五个示例逐行讲解 |
 | [docs/08-troubleshooting.md](docs/08-troubleshooting.md) | 排错清单、常见错误码、FAQ |
 | [docs/09-api-matrix.md](docs/09-api-matrix.md) | 字段速查表与能力×权限矩阵 |
-| [schema/plugin.schema.json](schema/plugin.schema.json) | JSON Schema（编辑器自动补全 / CI 校验） |
+| [schema/plugin.schema.json](schema/plugin.schema.json) | 清单 JSON Schema（编辑器自动补全 / CI 校验） |
+| [schema/message.schema.json](schema/message.schema.json) | 数据报文 JSON Schema：events / stations / overlays 等全部字段 |
 
 ---
 
@@ -95,6 +96,7 @@ python tools/mqe.py pack com.example.myplugin        # → com.example.myplugin.
 ├── LICENSE                    MIT
 ├── docs/                      完整开发文档
 ├── schema/plugin.schema.json  清单 JSON Schema
+├── schema/message.schema.json 数据报文 JSON Schema
 ├── tools/mqe.py               打包 / 校验 / 脚手架 CLI
 ├── templates/minimal/         最小可用模板
 ├── examples/

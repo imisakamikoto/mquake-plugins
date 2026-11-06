@@ -8,7 +8,9 @@
 ## 1. `file` · 静态文件（最简单，全平台）
 
 ```json
-"transport": { "type": "file", "file": "data.json", "intervalSeconds": 60 }
+{
+  "transport": { "type": "file", "file": "data.json", "intervalSeconds": 60 }
+}
 ```
 
 - 读包内相对路径；支持 `.json` / `.geojson` / `.jsonl` / 任意 UTF-8 文本。
@@ -24,13 +26,15 @@
 ## 2. `http` · 定时轮询（全平台）
 
 ```json
-"transport": {
-  "type": "http",
-  "url": "https://api.example.com/v1/data?city=${config.city}&t=${now}",
-  "method": "GET",
-  "headers": { "X-Api-Key": "${config.apiKey}" },
-  "intervalSeconds": 30,
-  "timeoutSeconds": 8
+{
+  "transport": {
+    "type": "http",
+    "url": "https://api.example.com/v1/data?city=${config.city}&t=${now}",
+    "method": "GET",
+    "headers": { "X-Api-Key": "${config.apiKey}" },
+    "intervalSeconds": 30,
+    "timeoutSeconds": 8
+  }
 }
 ```
 
@@ -59,11 +63,13 @@
 ## 3. `websocket` · 长连接推送（全平台）
 
 ```json
-"transport": {
-  "type": "websocket",
-  "url": "ws://127.0.0.1:8766",
-  "intervalSeconds": 5,
-  "timeoutSeconds": 8
+{
+  "transport": {
+    "type": "websocket",
+    "url": "ws://127.0.0.1:8766",
+    "intervalSeconds": 5,
+    "timeoutSeconds": 8
+  }
 }
 ```
 
@@ -81,12 +87,14 @@
 ## 4. `process` · 子进程 JSONL（任意语言，仅桌面）
 
 ```json
-"transport": {
-  "type": "process",
-  "command": "python",
-  "args": ["main.py", "--city", "${config.city}"],
-  "intervalSeconds": 10,
-  "timeoutSeconds": 8
+{
+  "transport": {
+    "type": "process",
+    "command": "python",
+    "args": ["main.py", "--city", "${config.city}"],
+    "intervalSeconds": 10,
+    "timeoutSeconds": 8
+  }
 }
 ```
 

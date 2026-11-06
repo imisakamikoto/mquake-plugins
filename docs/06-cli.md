@@ -98,10 +98,30 @@ jobs:
 VS Code 可以在 `settings.json` 里绑定：
 
 ```json
-"json.schemas": [
-  { "fileMatch": ["**/plugin.json"], "url": "./schema/plugin.schema.json" }
-]
+{
+  "json.schemas": [
+    { "fileMatch": ["**/plugin.json"], "url": "./schema/plugin.schema.json" }
+  ]
+}
 ```
+
+## 数据报文 Schema
+
+[`schema/message.schema.json`](../schema/message.schema.json) 描述报文全部字段
+（尤其 `events` 的 `eventId` / `reportNum`）。在 VS Code 里给 `data.json` 绑定：
+
+```json
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["**/data.json"],
+      "url": "./schema/message.schema.json"
+    }
+  ]
+}
+```
+
+编辑器会提示漏填 `eventId`、拼错 `reportNum`、写错 `shape` / `level` 枚举。
 
 ## 与宿主校验的关系
 

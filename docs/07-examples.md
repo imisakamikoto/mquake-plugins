@@ -40,15 +40,17 @@
 要点：
 
 ```json
-"url": "http://127.0.0.1:8765/data.json?city=${config.city}&t=${now}",
-"headers": { "X-Api-Key": "${config.apiKey}" },
-"permissions": { "hosts": ["127.0.0.1", "localhost", "api.example.com"] },
-"settings": [
-  { "key": "city", "type": "select", "options": ["tokyo","osaka","sendai"] }
-],
-"mapping": {
-  "events": { "path": "data.items",
-    "fields": { "id": "event_id", "title": "name", "latitude": "lat" } }
+{
+  "url": "http://127.0.0.1:8765/data.json?city=${config.city}&t=${now}",
+  "headers": { "X-Api-Key": "${config.apiKey}" },
+  "permissions": { "hosts": ["127.0.0.1", "localhost", "api.example.com"] },
+  "settings": [
+    { "key": "city", "type": "select", "options": ["tokyo","osaka","sendai"] }
+  ],
+  "mapping": {
+    "events": { "path": "data.items",
+      "fields": { "id": "event_id", "title": "name", "latitude": "lat" } }
+  }
 }
 ```
 
@@ -149,7 +151,9 @@ python examples/websocket/server.py
 关键点在 `plugin.json`：
 
 ```json
-"permissions": { "alerts": true, "hosts": [], "process": false }
+{
+  "permissions": { "alerts": true, "hosts": [], "process": false }
+}
 ```
 
 以及 `data.json`：

@@ -45,12 +45,14 @@
 ## permissions
 
 ```json
-"permissions": {
-  "hosts": ["127.0.0.1", "localhost", "api.example.com", "*.example.org"],
-  "process": false,
-  "alerts": false,
-  "sound": false,
-  "overlay": true
+{
+  "permissions": {
+    "hosts": ["127.0.0.1", "localhost", "api.example.com", "*.example.org"],
+    "process": false,
+    "alerts": false,
+    "sound": false,
+    "overlay": true
+  }
 }
 ```
 
@@ -82,14 +84,16 @@ HTTP 上限 60）。
 ## settings（自动生成表单）
 
 ```json
-"settings": [
-  { "key": "city",     "label": "城市",   "type": "text",   "default": "东京",
-    "description": "用于查询参数" },
-  { "key": "refresh",  "label": "刷新间隔", "type": "number", "default": 30 },
-  { "key": "debug",    "label": "调试",   "type": "toggle", "default": false },
-  { "key": "region",   "label": "区域",   "type": "select",
-    "options": ["kanto", "kansai", "tohoku"], "default": "kanto" }
-]
+{
+  "settings": [
+    { "key": "city",     "label": "城市",   "type": "text",   "default": "东京",
+      "description": "用于查询参数" },
+    { "key": "refresh",  "label": "刷新间隔", "type": "number", "default": 30 },
+    { "key": "debug",    "label": "调试",   "type": "toggle", "default": false },
+    { "key": "region",   "label": "区域",   "type": "select",
+      "options": ["kanto", "kansai", "tohoku"], "default": "kanto" }
+  ]
+}
 ```
 
 | 字段            | 说明                                       |
@@ -119,8 +123,10 @@ HTTP 上限 60）。
 示例：
 
 ```json
-"url": "https://api.example.com/v1/data?city=${config.city}&t=${now}",
-"headers": { "Authorization": "Bearer ${env.MY_TOKEN}" }
+{
+  "url": "https://api.example.com/v1/data?city=${config.city}&t=${now}",
+  "headers": { "Authorization": "Bearer ${env.MY_TOKEN}" }
+}
 ```
 
 未知变量展开为空字符串，不会报错，也不会把 `${...}` 原样发出去。
@@ -130,16 +136,18 @@ HTTP 上限 60）。
 当你的接口返回的不是标准结构时，用 `mapping` 免写转换代码：
 
 ```json
-"mapping": {
-  "events": {
-    "path": "data.items",
-    "fields": {
-      "id": "event_id",
-      "title": "name",
-      "latitude": "lat",
-      "longitude": "lon",
-      "magnitude": "mag",
-      "time": "occurred_at"
+{
+  "mapping": {
+    "events": {
+      "path": "data.items",
+      "fields": {
+        "id": "event_id",
+        "title": "name",
+        "latitude": "lat",
+        "longitude": "lon",
+        "magnitude": "mag",
+        "time": "occurred_at"
+      }
     }
   }
 }

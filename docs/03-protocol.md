@@ -1,5 +1,9 @@
 # 03 · 数据报文协议
 
+机器可读定义：[`schema/message.schema.json`](../schema/message.schema.json)。
+在编辑器里绑定它可获得字段补全与「漏填 eventId」提示。
+
+
 所有通道产出的都是**同一套 JSON 报文**。这一页是完整字段参考。
 
 ## 报文外壳
@@ -30,24 +34,118 @@
 
 ## `events` · 自定义事件
 
-| 字段                                  | 类型          | 默认      | 说明                        |
-| ----------------------------------- | ----------- | ------- | ------------------------- |
-| `id`                                | string      | `""`    | 必填语义上；会加 `<pluginId>:` 前缀 |
-| `title` / `name` / `hypoCenter`     | string      | `未命名事件` | 标题                        |
-| `time` / `originTime` / `timestamp` | ISO8601 或毫秒 | null    | 发生时刻                      |
-| `latitude` / `lat`                  | number      | null    | 纬度                        |
-| `longitude` / `lon` / `lng`         | number      | null    | 经度                        |
-| `depth` / `depthKm`                 | number      | null    | 深度 km                     |
-| `magnitude` / `mag`                 | number      | null    | 震级                        |
-| `shindo`                            | string      | null    | 震度文本，如 `"4"` / `"5-"`     |
-| `place`                             | string      | `""`    | 地名                        |
-| `description` / `body`              | string      | `""`    | 说明                        |
-| `color`                             | 颜色          | null    | 见「颜色」                     |
-| `url` / `link`                      | string      | `""`    | 链接                        |
-| `cancel` / `cancelled`              | bool        | false   | 取消标记                      |
-| `isEew`                             | bool        | false   | **宿主强制为 false**，见安全说明     |
+### 两个「编号」必须先分清
 
+| 概念 | 字段 | 作用 |
+| --- | --- | --- |
+| **事件 ID**（一次地震/预警的唯一标识） | `id` / `eventId` / `EventID` | 同一事件的多报共用一个 ID；宿主命名空间化为 `plugin:<插件id>:<事件ID>` |
+| **事件编号 / 报号**（第几报） | `reportNum` / `report` / `ReportNum` | 同一事件 ID 下递增；宿主据此判定「新报 / 更新 / 重复推送」 |
 
+两者缺一都会导致去重异常：
+
+- 只给 `id` 不给 `reportNum`：默认 `0`，后续改数据时不会触发更新音；
+- 不同事件共用同一个 `id`：会被当成同一事件的连续报，后一条覆盖前一条；
+- `eventId` 留空：所有事件被归到同一个空 ID 下互相覆盖，**务必填写**。
+
+宿主的完整事件 ID 规则：`plugin:<插件id>:<事件ID>`，例如插件
+`com.example.alert-eew` 上报 `eventId: "eew-001"`，最终是
+`plugin:com.example.alert-eew:eew-001`。这与官方事件完全隔离，
+不会污染官方 EEW 的报号记忆。
+
+> `source`（来源）**不接受插件指定**，一律由宿主写为 `插件:<插件名>`，
+> 因此插件无法伪装成 JMA / 官方预警来源，界面始终可区分。
+
+### 字段表
+
+| 字段 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| **`id` / `eventId` / `EventID`** | string | `""` | **事件 ID，必填**。稳定且全局唯一；宿主加命名空间前缀 |
+| **`reportNum` / `report` / `ReportNum`** | int | `0` | **事件编号（报号）**。同一事件 ID 下递增触发更新音 |
+| `title` / `name` / `hypoCenter` | string | `未命名事件` | 标题 / 震源名 |
+| `time` / `originTime` / `timestamp` | ISO8601 或毫秒 | null | 发生时刻 |
+| `reportTime` / `reportAt` | ISO8601 或毫秒 | null | 发报时刻 |
+| `latitude` / `lat` | number | null | 纬度 |
+| `longitude` / `lon` / `lng` | number | null | 经度 |
+| `depth` / `depthKm` | number | null | 深度 km |
+| `magnitude` / `mag` | number | null | 震级 |
+| `shindo` | string | null | 震度文本，如 `"4"` / `"5-"`；≥ 5 弱会判为警报 |
+| `maxEstimatedIntensity` / `maxIntensity` | number | null | 预估最大震度数值 |
+| `place` | string | `""` | 地名 |
+| `description` / `body` | string | `""` | 说明 |
+| `color` | 颜色 | null | 见「颜色」 |
+| `url` / `link` | string | `""` | 链接 |
+| `isEew` | bool | false | 声明为速报（EEW）；需 `permissions.alerts` 授权才进预警链路 |
+| `eewKind` / `kind` | string | `""` | `警報` / `予報`，决定警报音与通知标题 |
+| `active` | bool | `true` | 置 `false` 只展示、不进预警链路 |
+| `warnRegionCount` | int | null | 5 弱以上行政区数；比上次多 ≥ 3 会补播警报音 |
+| `cancel` / `cancelled` | bool | false | 取消报（解除报只响一次） |
+| `finalMessage` | string | null | 最终报标记 |
+
+### 完整示例
+
+```json
+{
+  "type": "snapshot",
+  "events": [
+    {
+      "eventId": "eew-001",
+      "reportNum": 1,
+      "title": "自定义速报",
+      "isEew": true,
+      "active": true,
+      "eewKind": "警報",
+      "reportTime": "2026-01-01T00:00:00Z",
+      "time": "2026-01-01T00:00:00Z",
+      "latitude": 35.68,
+      "longitude": 139.69,
+      "depth": 10,
+      "magnitude": 6.8,
+      "shindo": "5-",
+      "maxEstimatedIntensity": 4.8,
+      "warnRegionCount": 7,
+      "place": "东京湾",
+      "description": "第 1 报"
+    },
+    {
+      "eventId": "quake-001",
+      "reportNum": 0,
+      "title": "已发生的地震",
+      "isEew": false,
+      "time": "2026-01-01T00:00:00Z",
+      "latitude": 34.5,
+      "longitude": 138.2,
+      "depth": 20,
+      "magnitude": 4.2,
+      "shindo": "3",
+      "place": "静冈"
+    }
+  ]
+}
+```
+
+第二报只改 `reportNum`（和内容），**保持 `eventId` 不变**：
+
+```json
+{
+  "type": "patch",
+  "events": [
+    {
+      "eventId": "eew-001",
+      "reportNum": 2,
+      "isEew": true,
+      "active": true,
+      "eewKind": "警報",
+      "shindo": "5+",
+      "warnRegionCount": 12,
+      "place": "东京湾"
+    }
+  ]
+}
+```
+
+宿主会按 `eventId + reportNum` 走 [AudioService] 的去重：报号递增 → 更新音；
+预报升警报 → 补播警报音；`warnRegionCount` 增加 ≥ 3 → 补播警报音；
+同一报号重复推送 → 不响。规则与官方 EEW 完全一致。
 
 > 事件始终出现在列表里。当 `isEew: true`、`active: true` 且插件清单授予
 > `permissions.alerts` 时，会**正常触发**完整预警链路（见 [05](05-security.md)）；
@@ -176,7 +274,9 @@
 ## `sounds` · 音效覆盖
 
 ```json
-"sounds": { "quake_info": "assets/info.wav", "eew_alert": "assets/alert.wav" }
+{
+  "sounds": { "quake_info": "assets/info.wav", "eew_alert": "assets/alert.wav" }
+}
 ```
 
 键为内置音效 id，值为**包内相对路径**。需要 `capabilities: ["sounds"]` +  
@@ -185,7 +285,9 @@
 ## `theme` · 配色覆盖
 
 ```json
-"theme": { "accent": "#FF9933", "shindo.5-": "#FF6644" }
+{
+  "theme": { "accent": "#FF9933", "shindo.5-": "#FF6644" }
+}
 ```
 
 键为配色名，值为颜色字符串。需要 `capabilities: ["theme"]`。

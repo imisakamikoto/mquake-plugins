@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/imisakamikoto/mquake-plugins/main/schema/message.schema.json",
+  "title": "Mquake 插件数据报文",
+  "description": "schema=1 的插件报文。所有顶层分区可选；未声明对应 capability 的分区会被宿主丢弃。",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "type": { "type": "string", "enum": ["snapshot", "patch"], "default": "snapshot" },
+    "events": { "type": "array", "items": { "$ref": "#/$defs/event" } },
+    "stations": { "type": "array", "items": { "$ref": "#/$defs/station" } },
+    "overlays": { "type": "array", "items": { "$ref": "#/$defs/overlay" } },
+    "cards": { "type": "array", "items": { "$ref": "#/$defs/card" } },
+    "metrics": { "type": "array", "items": { "$ref": "#/$defs/metric" } },
+    "tiles": { "type": "array", "items": { "$ref": "#/$defs/tile" } },
+    "actions": { "type": "array", "items": { "$ref": "#/$defs/action" } },
+    "notifications": { "type": "array", "items": { "$ref": "#/$defs/notification" } },
+    "rules": { "type": "array", "items": { "$ref": "#/$defs/rule" } },
+    "logs": { "type": "array", "items": { "$ref": "#/$defs/log" } },
+    "sounds": { "type": "object", "additionalProperties": { "type": "string" } },
+    "theme": { "type": "object", "additionalProperties": { "type": "string" } }
+  },
+  "$defs": {
+    "number": { "type": ["number", "string"] },
+    "color": { "type": ["string", "integer"] },
+    "points": {
+      "oneOf": [
+        { "type": "array", "items": { "type": "array", "items": { "type": "number" }, "minItems": 2 } },
+        { "type": "array", "items": { "type": "object" } },
+        { "type": "string" }
+      ]
+    },
+    "event": {
+      "type": "object",
+      "description": "自定义事件。eventId 与 reportNum 是去重的两个关键字段。",
+      "properties": {
+        "id": { "type": "string", "description": "事件 ID（别名：eventId / EventID）" },
+        "eventId": { "type": "string", "description": "事件 ID，优先级低于 id" },
+        "EventID": { "type": "string", "description": "事件 ID，JMA 风格别名" },
+        "reportNum": { "type": ["integer", "string"], "default": 0, "description": "事件编号/报号，同一 eventId 下递增" },
+        "report": { "type": ["integer", "string"], "description": "报号别名" },
+        "ReportNum": { "type": ["integer", "string"], "description": "报号别名" },
+        "title": { "type": "string" },
+        "name": { "type": "string" },
+        "hypoCenter": { "type": "string" },
+        "time": { "type": ["string", "integer"] },
+        "originTime": { "type": ["string", "integer"] },
+        "timestamp": { "type": ["string", "integer"] },
+        "reportTime": { "type": ["string", "integer"] },
+        "reportAt": { "type": ["string", "integer"] },
+        "latitude": { "$ref": "#/$defs/number" },
+        "lat": { "$ref": "#/$defs/number" },
+        "longitude": { "$ref": "#/$defs/number" },
+        "lon": { "$ref": "#/$defs/number" },
+        "lng": { "$ref": "#/$defs/number" },
+        "depth": { "$ref": "#/$defs/number" },
+        "depthKm": { "$ref": "#/$defs/number" },
+        "magnitude": { "$ref": "#/$defs/number" },
+        "mag": { "$ref": "#/$defs/number" },
+        "shindo": { "type": "string" },
+        "maxEstimatedIntensity": { "$ref": "#/$defs/number" },
+        "maxIntensity": { "$ref": "#/$defs/number" },
+        "place": { "type": "string" },
+        "description": { "type": "string" },
+        "body": { "type": "string" },
+        "color": { "$ref": "#/$defs/color" },
+        "url": { "type": "string" },
+        "link": { "type": "string" },
+        "isEew": { "type": "boolean", "default": false },
+        "eewKind": { "type": "string", "description": "警報 / 予報" },
+        "kind": { "type": "string" },
+        "active": { "type": "boolean", "default": true },
+        "warnRegionCount": { "type": ["integer", "string"] },
+        "cancel": { "type": "boolean", "default": false },
+        "cancelled": { "type": "boolean" },
+        "finalMessage": { "type": ["string", "null"] }
+      },
+      "anyOf": [
+        { "required": ["id"] },
+        { "required": ["eventId"] },
+        { "required": ["EventID"] }
+      ]
+    },
+    "station": {
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "latitude": { "$ref": "#/$defs/number" },
+        "lat": { "$ref": "#/$defs/number" },
+        "longitude": { "$ref": "#/$defs/number" },
+        "lon": { "$ref": "#/$defs/number" },
+        "lng": { "$ref": "#/$defs/number" },
+        "kind": { "type": "string" },
+        "pga": { "$ref": "#/$defs/number" },
+        "shindo": { "$ref": "#/$defs/number" },
+        "intensity": { "$ref": "#/$defs/number" },
+        "observedAt": { "type": ["string", "integer"] },
+        "time": { "type": ["string", "integer"] },
+        "color": { "$ref": "#/$defs/color" }
+      },
+      "anyOf": [
+        { "required": ["code"] },
+        { "required": ["id"] }
+      ]
+    },
+    "overlay": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "shape": { "type": "string", "enum": ["marker", "circle", "polyline", "line", "polygon", "area", "text", "label"] },
+        "type": { "type": "string" },
+        "points": { "$ref": "#/$defs/points" },
+        "coordinates": { "$ref": "#/$defs/points" },
+        "label": { "type": "string" },
+        "title": { "type": "string" },
+        "color": { "$ref": "#/$defs/color" },
+        "fillColor": { "$ref": "#/$defs/color" },
+        "fill": { "$ref": "#/$defs/color" },
+        "strokeWidth": { "$ref": "#/$defs/number" },
+        "width": { "$ref": "#/$defs/number" },
+        "radius": { "$ref": "#/$defs/number" },
+        "tooltip": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "card": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "body": { "type": "string" },
+        "text": { "type": "string" },
+        "rows": {
+          "oneOf": [
+            { "type": "array", "items": { "type": "object" } },
+            { "type": "object" }
+          ]
+        },
+        "color": { "$ref": "#/$defs/color" },
+        "icon": { "type": "integer" },
+        "url": { "type": "string" },
+        "link": { "type": "string" },
+        "priority": { "type": ["integer", "string"] }
+      }
+    },
+    "metric": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "name": { "type": "string" },
+        "value": { "$ref": "#/$defs/number" },
+        "unit": { "type": "string" },
+        "min": { "$ref": "#/$defs/number" },
+        "max": { "$ref": "#/$defs/number" },
+        "history": { "type": "array", "items": { "$ref": "#/$defs/number" } },
+        "color": { "$ref": "#/$defs/color" },
+        "description": { "type": "string" }
+      }
+    },
+    "tile": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "urlTemplate": { "type": "string" },
+        "url": { "type": "string" },
+        "attribution": { "type": "string" },
+        "maxZoom": { "type": ["integer", "string"] },
+        "subdomains": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "action": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "title": { "type": "string" },
+        "kind": { "type": "string", "enum": ["openUrl", "refresh", "copy", "custom"] },
+        "type": { "type": "string" },
+        "value": { "type": "string" },
+        "url": { "type": "string" },
+        "text": { "type": "string" },
+        "icon": { "type": "integer" }
+      }
+    },
+    "notification": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "text": { "type": "string" },
+        "level": { "type": "string", "enum": ["info", "warning", "warn", "error", "danger"] },
+        "at": { "type": "string" },
+        "time": { "type": "string" }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "target": { "type": "string", "enum": ["metrics", "events"] },
+        "op": { "type": "string", "enum": ["keep", "color", "derive"] },
+        "field": { "type": "string" },
+        "comparator": { "type": "string", "enum": [">=", ">", "<", "<=", "==", "!="] },
+        "threshold": { "$ref": "#/$defs/number" },
+        "value": { "$ref": "#/$defs/number" },
+        "set": { "type": "string" },
+        "text": { "type": "string" },
+        "color": { "type": "string" },
+        "where": { "type": "string" }
+      }
+    },
+    "log": {
+      "type": "object",
+      "properties": {
+        "level": { "type": "string", "enum": ["debug", "info", "warning", "warn", "error"] },
+        "message": { "type": "string" },
+        "text": { "type": "string" },
+        "at": { "type": "string" },
+        "time": { "type": "string" }
+      }
+    }
+  }
+}

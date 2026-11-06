@@ -56,7 +56,8 @@
   ],
   "events": [
     {
-      "id": "demo-1",
+      "eventId": "demo-1",
+      "reportNum": 1,
       "title": "演示：自定义事件",
       "time": "2026-01-01T00:00:00Z",
       "latitude": 35.68,
@@ -65,7 +66,8 @@
       "magnitude": 4.2,
       "place": "东京湾",
       "shindo": "3",
-      "description": "插件事件只出现在列表，不会触发警报音。"
+      "description": "插件事件只出现在列表，不会触发警报音。",
+      "active": false
     }
   ],
   "stations": [
